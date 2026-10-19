@@ -31,17 +31,19 @@ class TextNode():
         return f"TextNode({self.text}, {self.text_type.value}, {self.url}"
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
-    if text_node.text_type not in TextType:
-        raise Exception("no Valid Texttype detected")
-    if text_node.text_type is TextType.TEXT:
-        return LeafNode(None,text_node.text)
-    if text_node.text_type is TextType.BOLD:
-        return LeafNode("b",text_node.text)
-    if text_node.text_type is TextType.ITALIC:
-        return LeafNode("i",text_node.text)
-    if text_node.text_type is TextType.CODE:
-        return LeafNode("code",text_node.text)
+    '''create HTML Objects for each text Node, that is supposed to be created.'''
+    tag_map = {
+    TextType.TEXT:None,
+    TextType.BOLD:"b",
+    TextType.ITALIC: "i",
+    TextType.CODE: "code",
+    }
+    if text_node.text_type in tag_map:
+        return LeafNode(tag_map[text_node.text_type],text_node.text)
+
     if text_node.text_type is TextType.LINK:
         return LeafNode("a",text_node.text,{"href":text_node.url})
+    
     if text_node.text_type is TextType.IMAGE:
-        return LeafNode("img","",[{"src":text_node.url},{"alt":text_node.text}])
+        return LeafNode("img","",{"src":text_node.url,"alt":text_node.text})
+    raise Exception("no Valid Texttype detected")

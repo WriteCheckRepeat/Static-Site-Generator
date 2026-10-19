@@ -39,12 +39,31 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(html_node.tag, None)
         self.assertEqual(html_node.value, "This is a text node")
 
-    def test_text_bold(self):
+    def test_text_incorrect_type(self):
         with self.assertRaises(AttributeError):
             node = TextNode("This is a bold text node", TextType.I)
             html_node = text_node_to_html_node(node)
 
+    def test_text_bold(self):
+        node = TextNode("This is a text node", TextType.BOLD)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is a text node")
 
+    def test_image(self):
+        node = TextNode("This is a image text node", TextType.IMAGE, "https:imagelink")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, "")
+        self.assertEqual(html_node.props["src"], "https:imagelink")
+        self.assertEqual(html_node.props["alt"], "This is a image text node")
+
+    def test_link(self):
+        node = TextNode("This is a image text node", TextType.LINK, "https:somelink")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "a")
+        self.assertEqual(html_node.value, "This is a image text node")
+        self.assertEqual(html_node.props["href"], "https:somelink")
 
 if __name__ == "__main__":
     unittest.main()

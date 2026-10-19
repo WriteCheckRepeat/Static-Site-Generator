@@ -2,6 +2,7 @@ from enum import Enum
 from collections.abc import Callable
 
 class HTMLNode():
+    '''This Class acts as a Parent Class for inheritance purposes. It's not supposed to be called directly.'''
     def __init__(self, tag:str = None, value:str = None, children = None, props:dict[str,str] = None) -> None:
         self.tag = tag
         self.value = value
@@ -24,7 +25,7 @@ class HTMLNode():
 
 class LeafNode(HTMLNode):
     ''' A Leaf Node is at the very end of a HTML Node in a sense, that the
-    tree doesn't continiue from that point. This Node can't have a child attached'''
+    tree doesn't continue from that point. This Node can't have a child attached'''
     def __init__(self, tag:str, value:str, props:dict[str,str] = None):
         super().__init__(tag=tag, value=value,  props=props)
 
