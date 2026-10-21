@@ -9,7 +9,8 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
             new_nodes.append(old_node)
         else:
             tmp_strs = old_node.text.split(delimiter)
-            if len(tmp_strs)%2:
+            if not len(tmp_strs)%2:
+                print (f"string Länge:{len(tmp_strs)}")
                 raise Exception(f"Error: Missing a closing '{delimiter}' in '{old_node}'")
             inside_inline = False
             for i in range(len(tmp_strs)):

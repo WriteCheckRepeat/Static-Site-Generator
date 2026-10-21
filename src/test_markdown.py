@@ -18,3 +18,44 @@ class Testmarkdown(unittest.TestCase):
         nodes = split_nodes_delimiter([node2_link,node2_italic],"**",TextType.BOLD)
         self.assertEqual(node_link, nodes[0])
         self.assertEqual(node_italic, nodes[1])
+
+    def test_Text_middle_BOLD(self):
+        node = TextNode("This is a text **node**, ok?", TextType.TEXT)
+        nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
+        self.assertEqual(TextNode("This is a text ",TextType.TEXT), nodes[0])
+        self.assertEqual(TextNode("node",TextType.BOLD), nodes[1])
+        self.assertEqual(TextNode(", ok?",TextType.TEXT), nodes[2])   
+
+    def test_Text_end_BOLD(self):
+        node = TextNode("This is a text **node**", TextType.TEXT)
+        nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
+        self.assertEqual(TextNode("This is a text ",TextType.TEXT), nodes[0])
+        self.assertEqual(TextNode("node",TextType.BOLD), nodes[1])   
+
+    def test_Text_middle_and_End_BOLD(self):
+        node = TextNode("This is a text **node**, ok**?**", TextType.TEXT)
+        nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
+        self.assertEqual(TextNode("This is a text ",TextType.TEXT), nodes[0])
+        self.assertEqual(TextNode("node",TextType.BOLD), nodes[1])
+        self.assertEqual(TextNode(", ok",TextType.TEXT), nodes[2])   
+        self.assertEqual(TextNode("?",TextType.BOLD), nodes[3])
+
+    def test_Text_middle_BOLD_wrong_Delimiter_first(self):
+        node = TextNode("This is a text *node**, ok?", TextType.TEXT)
+        with self.assertRaises(Exception):
+            nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
+
+    def test_Text_middle_BOLD_wrong_Delimiter_second(self):
+        node = TextNode("This is a text **node*, ok?", TextType.TEXT)
+        with self.assertRaises(Exception):
+            nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
+
+    def test_Text_middle_BOLD_wrong_Delimiter_third(self):
+        node = TextNode("This is a text **node**, ok*?**", TextType.TEXT)
+        with self.assertRaises(Exception):
+            nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
+
+    def test_Text_middle_BOLD_wrong_Delimiter_fourth(self):
+        node = TextNode("This is a text **node**, ok**?*", TextType.TEXT)
+        with self.assertRaises(Exception):
+            nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
