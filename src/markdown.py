@@ -3,13 +3,9 @@ from textnode import TextNode, TextType
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     new_nodes = []
-    tag_map = {
-    "'":TextType.CODE,
-    "**":TextType.BOLD,
-    "_":TextType.ITALIC
-    }
+
     for old_node in old_nodes:
-        if old_node.text_type is not text_type.TEXT:
+        if old_node.text_type is not TextType.TEXT:
             new_nodes.append(old_node)
         else:
             tmp_strs = old_node.text.split(delimiter)
@@ -18,8 +14,9 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
             inside_inline = False
             for i in range(len(tmp_strs)):
                 if inside_inline:
-                    new_nodes.append(TextNode(tmp_strs[i],tag_map[delimiter]))
+                    new_nodes.append(TextNode(tmp_strs[i],text_type))
                     inside_inline = False
                 else:
                     new_nodes.append(TextNode(tmp_strs[i],TextType.TEXT))
                     inside_inline = True
+    return new_nodes

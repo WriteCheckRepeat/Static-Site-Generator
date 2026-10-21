@@ -9,8 +9,8 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(node, node2)
 
     def test_eq_with_url(self):
-        node = TextNode("This is a text node", TextType.BOLD,"link")
-        node2 = TextNode("This is a text node", TextType.BOLD,"link")
+        node = TextNode("This is a text node", TextType.LINK,"link")
+        node2 = TextNode("This is a text node", TextType.LINK,"link")
         self.assertEqual(node, node2)
 
     def test_eq_second_no_url(self):
