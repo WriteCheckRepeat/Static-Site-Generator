@@ -68,6 +68,16 @@ class Testmarkdown(unittest.TestCase):
         self.assertEqual(TextNode("node",TextType.BOLD), nodes[1])
         self.assertEqual(TextNode(", ok",TextType.TEXT), nodes[2])   
         self.assertEqual(TextNode("?",TextType.ITALIC), nodes[3])
+
+    def test_Text_middle_BOLD_and_ITALIC_inbetween(self):
+        node = TextNode("This is a text **node, _ok?_**", TextType.TEXT)
+        nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
+        nodes = split_nodes_delimiter(nodes,"_", TextType.ITALIC)
+        print(f"\n\n{nodes}\n\n")
+        self.assertEqual(TextNode("This is a text ",TextType.TEXT), nodes[0])
+        self.assertEqual(TextNode("node, _ok?_",TextType.BOLD), nodes[1]) 
+#        self.assertEqual(TextNode("?",TextType.ITALIC), nodes[3])
+
 '''
     def test_Text_middle_BOLD_and_End_LINK(self):
         node = TextNode("This is a text **node**, ok_?_", TextType.TEXT)
