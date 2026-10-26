@@ -1,5 +1,5 @@
 import unittest
-from markdown import split_nodes_delimiter
+from markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 from textnode import TextNode, TextType
 
 
@@ -78,13 +78,14 @@ class Testmarkdown(unittest.TestCase):
         self.assertEqual(TextNode("node, _ok?_",TextType.BOLD), nodes[1]) 
 #        self.assertEqual(TextNode("?",TextType.ITALIC), nodes[3])
 
-'''
-    def test_Text_middle_BOLD_and_End_LINK(self):
-        node = TextNode("This is a text **node**, ok_?_", TextType.TEXT)
-        nodes = split_nodes_delimiter([node],"**", TextType.BOLD)
-        nodes = split_nodes_delimiter(nodes,"_", TextType.ITALIC)
-        self.assertEqual(TextNode("This is a text ",TextType.TEXT), nodes[0])
-        self.assertEqual(TextNode("node",TextType.BOLD), nodes[1])
-        self.assertEqual(TextNode(", ok",TextType.TEXT), nodes[2])   
-        self.assertEqual(TextNode("?",TextType.ITALIC), nodes[3])
-'''
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links(
+            "This is text with an [some Link](https://i.imgur.com)"
+        )
+        self.assertListEqual([("some Link", "https://i.imgur.com")], matches)
