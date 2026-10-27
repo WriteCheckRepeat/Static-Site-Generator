@@ -4,8 +4,7 @@ import re
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     '''
-    Syntax to split Lists of Text Nodes with markdown delimiters to Text Node Types. This Function only handles
-    Text formats like Bold and Italic. It's not used for Links and Images. 
+    converts markdown to Text Node Format, that can be converted to HTML Nodes. Doesn't handle links or images.
     '''
     new_nodes = []
 
@@ -17,13 +16,18 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
             if not len(tmp_strs)%2:
                 raise Exception(f"Error: Missing a closing '{delimiter}' in '{old_node}'")
             inside_inline = False
-            for i in range(len(tmp_strs)):
+            i = 0
+            if old_node.text.startswith(delimiter):
+                inside_inline = True 
+                i = 1
+            while i < len(tmp_strs):
                 if inside_inline:
                     new_nodes.append(TextNode(tmp_strs[i],text_type))
                     inside_inline = False
                 else:
                     new_nodes.append(TextNode(tmp_strs[i],TextType.TEXT))
                     inside_inline = True
+                i += 1
     return new_nodes
 
 def extract_markdown_images(text:str) -> list[tuple]:
@@ -35,3 +39,30 @@ def extract_markdown_links(text:str) -> list[tuple]:
     '''Placeholder description.
     '''
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
+
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+    '''
+    converts markdown to Text Node Format, that can be converted to HTML Nodes.
+    '''
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type is not TextType.TEXT:
+            new_nodes.append(old_node)
+        else:
+            images = extract_markdown_images(old_node.text)
+        for i in range(len(images)):
+            # split the entire markdown syntax for image link to remove it from the resulting Strings.
+            tmp_strs = old_node.text.split(f"![{images[i][0]}]({images[i][1]})")
+            len_tmp_strs = len(tmp_strs)
+            if len_tmp_strs == 0: 
+                new_nodes.append(TextNode(images[i][0]),TextType.IMAGE,images[i][1])
+            elif len_tmp_strs == 1:
+                pass
+
+
+
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+    '''
+    converts markdown to Text Node Format, that can be converted to HTML Nodes.
+    '''
+    pass
