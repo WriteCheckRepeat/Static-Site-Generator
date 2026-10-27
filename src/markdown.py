@@ -17,15 +17,15 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
                 raise Exception(f"Error: Missing a closing '{delimiter}' in '{old_node}'")
             inside_inline = False
             i = 0
-            if old_node.text.startswith(delimiter):
-                inside_inline = True 
-                i = 1
             while i < len(tmp_strs):
+                if tmp_strs[i] is not "":
+                    if inside_inline:
+                        new_nodes.append(TextNode(tmp_strs[i],text_type))
+                    else:
+                        new_nodes.append(TextNode(tmp_strs[i],TextType.TEXT))
                 if inside_inline:
-                    new_nodes.append(TextNode(tmp_strs[i],text_type))
                     inside_inline = False
                 else:
-                    new_nodes.append(TextNode(tmp_strs[i],TextType.TEXT))
                     inside_inline = True
                 i += 1
     return new_nodes
@@ -50,14 +50,24 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
             new_nodes.append(old_node)
         else:
             images = extract_markdown_images(old_node.text)
-        for i in range(len(images)):
+            tmp_strs = []
+            for i in range(len(images)):
             # split the entire markdown syntax for image link to remove it from the resulting Strings.
-            tmp_strs = old_node.text.split(f"![{images[i][0]}]({images[i][1]})")
-            len_tmp_strs = len(tmp_strs)
-            if len_tmp_strs == 0: 
-                new_nodes.append(TextNode(images[i][0]),TextType.IMAGE,images[i][1])
-            elif len_tmp_strs == 1:
-                pass
+                tmp_strs += old_node.text.split(f"![{images[i][0]}]({images[i][1]})",maxsplit=1)
+            i = 0
+            j = 0
+            if old_node.text.startswith(f"![{images[0][0]}]({images[0][1]})"):
+                inside_inline = True 
+                i = 1
+            while i < len(tmp_strs):
+                if inside_inline:
+                    new_nodes.append(TextNode(images[j][0],TextType.IMAGE,images[j][1]))
+                    inside_inline = False
+                    j += 1
+                else:
+                    new_nodes.append(TextNode(tmp_strs[i],TextType.TEXT))
+                    inside_inline = True
+                    i += 1
 
 
 
