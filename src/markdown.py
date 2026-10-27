@@ -16,8 +16,7 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
             if not len(tmp_strs)%2:
                 raise Exception(f"Error: Missing a closing '{delimiter}' in '{old_node}'")
             inside_inline = False
-            i = 0
-            while i < len(tmp_strs):
+            for i in range(len(tmp_strs)):
                 if tmp_strs[i] is not "":
                     if inside_inline:
                         new_nodes.append(TextNode(tmp_strs[i],text_type))
@@ -27,7 +26,6 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
                     inside_inline = False
                 else:
                     inside_inline = True
-                i += 1
     return new_nodes
 
 def extract_markdown_images(text:str) -> list[tuple]:
@@ -56,18 +54,18 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
                 tmp_strs += old_node.text.split(f"![{images[i][0]}]({images[i][1]})",maxsplit=1)
             i = 0
             j = 0
-            if old_node.text.startswith(f"![{images[0][0]}]({images[0][1]})"):
-                inside_inline = True 
-                i = 1
-            while i < len(tmp_strs):
+            while i < len(tmp_strs) and j < len(images):
+                if tmp_strs[i] is not "":
+                    if inside_inline:
+                        new_nodes.append(TextNode(images[j][0],TextType.IMAGE,images[j][1]))
+                        j += 1
+                    else:
+                        new_nodes.append(TextNode(tmp_strs[i],TextType.TEXT))
+                        i += 1
                 if inside_inline:
-                    new_nodes.append(TextNode(images[j][0],TextType.IMAGE,images[j][1]))
                     inside_inline = False
-                    j += 1
                 else:
-                    new_nodes.append(TextNode(tmp_strs[i],TextType.TEXT))
                     inside_inline = True
-                    i += 1
 
 
 
