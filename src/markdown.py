@@ -31,28 +31,25 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
 def extract_markdown_images(text:str) -> list[tuple]:
     '''Placeholder description.
     '''
-    return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
+    return re.findall(r"(!\[([^\[\]]*)\]\(([^\(\)]*)\))",text)
 
 def extract_markdown_links(text:str) -> list[tuple]:
     '''Placeholder description.
     '''
-    return re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
+    return re.findall(r"(?<!!)(\[([^\[\]]*)\]\(([^\(\)]*)\))",text)
 
-def split_nodes_helper(text:str,extracted_List:list[tuple[str]], text_type:TextType) -> list[str]:
+def split_nodes_helper(text:str,extracted_list:list[tuple[str]], text_type:TextType) -> list[str]:
     '''Placeholder description
     '''
-    if extracted_List == []: return [TextNode(text,TextType.TEXT)]
-    if text_type is TextType.IMAGE:
-        tmp = text.partition(f"![{extracted_List[0][0]}]({extracted_List[0][1]})")
-    if text_type is TextType.LINK:
-        tmp = text.partition(f"[{extracted_List[0][0]}]({extracted_List[0][1]})")
-
+    if extracted_list == []: return [TextNode(text,TextType.TEXT)]
+    extracted_element = extracted_list.pop()
+    tmp = text.rpartition(extracted_element[0])
     nodes = []
-    if tmp[0] != "":
-        nodes.append(TextNode(tmp[0],TextType.TEXT))
-    nodes.append(TextNode(extracted_List[0][0],text_type,extracted_List[0][1]))
+    nodes.append(TextNode(extracted_element[1],text_type,extracted_element[2]))
     if tmp[2] != "":
-        nodes.extend(split_nodes_helper(tmp[2], extracted_List[1:], text_type)) 
+        nodes.append(TextNode(tmp[2],TextType.TEXT))
+    if tmp[0] != "":
+        return split_nodes_helper(tmp[0], extracted_list, text_type) + nodes
     return nodes
 
 def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
@@ -77,6 +74,5 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
         if old_node.text_type is not TextType.TEXT:
             new_nodes.append(old_node)
         else:
-            links = extract_markdown_links(old_node.text)
-            new_nodes = split_nodes_helper(old_node.text,links,TextType.LINK)
+            new_nodes = split_nodes_helper(old_node.text,extract_markdown_links(old_node.text),TextType.LINK)
     return new_nodes
