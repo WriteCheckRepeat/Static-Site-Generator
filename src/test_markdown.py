@@ -140,6 +140,22 @@ class Testmarkdown(unittest.TestCase):
             new_nodes,
         )
 
+    def test_two_images(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)![second image](https://i.imgur.com/3elNhQu.png) ",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode("second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"),
+                TextNode(" ", TextType.TEXT),
+            ],
+            new_nodes,
+        )
+
     def test_split_link_with_end_text(self):
 #        self.maxDiff = None
         node = TextNode(
@@ -185,6 +201,22 @@ class Testmarkdown(unittest.TestCase):
         self.assertListEqual(
             [
                 TextNode("This is text with an [link](https://i.imgur.com/zjjcJKZ.png) and another [second link](https://i.imgur.com/3elNhQu.png)", TextType.TEXT),
+            ],
+            new_nodes,
+        )
+
+    def test_two_link(self):
+#        self.maxDiff = None
+        node = TextNode(
+            "This is text with an [link](https://i.imgur.com/zjjcJKZ.png)[second link](https://i.imgur.com/3elNhQu.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode("second link", TextType.LINK, "https://i.imgur.com/3elNhQu.png"),
             ],
             new_nodes,
         )
